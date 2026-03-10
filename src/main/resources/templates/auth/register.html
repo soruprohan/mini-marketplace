@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Register – Mini Marketplace</title>
+</head>
+<body>
+<h2>Create Account</h2>
+
+<form th:action="@{/auth/register}" th:object="${userDTO}" method="post">
+    <label>Username:
+        <input type="text" th:field="*{username}"/>
+        <span th:errors="*{username}" style="color:red;"></span>
+    </label><br/>
+
+    <label>Email:
+        <input type="email" th:field="*{email}"/>
+        <span th:errors="*{email}" style="color:red;"></span>
+    </label><br/>
+
+    <label>Password:
+        <input type="password" th:field="*{password}"/>
+        <span th:errors="*{password}" style="color:red;"></span>
+    </label><br/>
+
+    <label>Confirm Password:
+        <input type="password" th:field="*{confirmPassword}"/>
+        <span th:errors="*{confirmPassword}" style="color:red;"></span>
+    </label><br/>
+
+    <button type="submit">Register</button>
+</form>
+
+<p>Already have an account? <a th:href="@{/auth/login}">Login</a></p>
+</body>
+</html>
