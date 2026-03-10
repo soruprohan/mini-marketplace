@@ -14,5 +14,5 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
      * Primary lookup used when assigning roles during registration.
      * Example: roleRepository.findByName(ERole.ROLE_BUYER)
      */
-    Optional<Role> findByName(ERole name);
+    Optional<Role> findByName(Role.ERole name);
 }
