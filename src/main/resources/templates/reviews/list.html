@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head><title>Reviews</title></head>
+<body>
+<h2>Reviews</h2>
+
+<p th:if="${#lists.isEmpty(reviews)}">No reviews yet for this product.</p>
+
+<div th:each="review : ${reviews}" style="border-bottom:1px solid #ccc; padding:8px 0;">
+    <strong th:text="${review.buyer.username}"></strong>
+    — Rating: <span th:text="${review.rating}"></span>/5
+    <p th:text="${review.comment}"></p>
+    <small th:text="${#temporals.format(review.createdAt, 'dd MMM yyyy')}"></small>
+
+    <!-- Delete button: shown to the review owner or admins -->
+    <form th:if="${#authorization.expression('isAuthenticated()')}"
+          sec:authorize="isAuthenticated()"
+          th:action="@{/reviews/{id}/delete(id=${review.id})}"
+          method="post"
+          style="display:inline;"
+          onsubmit="return confirm('Delete this review?');">
+        <input type="hidden" name="productId" th:value="${productId}"/>
+        <button type="submit"
+                sec:authorize="hasRole('ADMIN') or (isAuthenticated() and #authentication.name == ${review.buyer.username})">
+            Delete
+        </button>
+    </form>
+</div>
+
+<br/>
+<a th:href="@{/products/{id}(id=${productId})}">Back to Product</a>
+</body>
+</html>

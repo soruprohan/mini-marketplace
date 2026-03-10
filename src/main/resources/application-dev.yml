@@ -5,7 +5,7 @@ spring:
     password: 12345678
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     show-sql: true
     defer-datasource-initialization: true
   sql:
