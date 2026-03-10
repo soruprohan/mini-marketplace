@@ -1,9 +1,14 @@
 package com.marketplace.mini_marketplace.controller;
 
+import com.marketplace.mini_marketplace.dto.OrderDTO;
 import com.marketplace.mini_marketplace.dto.ProductDTO;
+import com.marketplace.mini_marketplace.dto.ReviewDTO;
+import com.marketplace.mini_marketplace.model.Product;
 import com.marketplace.mini_marketplace.service.CategoryService;
 import com.marketplace.mini_marketplace.service.ProductService;
+import com.marketplace.mini_marketplace.service.ReviewService;
 import jakarta.validation.Valid;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,10 +23,14 @@ public class ProductController {
 
     private final ProductService productService;
     private final CategoryService categoryService;
+    private final ReviewService reviewService;
 
-    public ProductController(ProductService productService, CategoryService categoryService) {
+    public ProductController(ProductService productService,
+                             CategoryService categoryService,
+                             ReviewService reviewService) {
         this.productService  = productService;
         this.categoryService = categoryService;
+        this.reviewService   = reviewService;
     }
 
     @GetMapping
@@ -38,6 +47,10 @@ public class ProductController {
     @GetMapping("/{id}")
     public String productDetail(@PathVariable Long id, Model model) {
         model.addAttribute("product", productService.getProductById(id));
+        model.addAttribute("reviews", reviewService.getReviewsByProduct(id));
+        // Required so th:object="${reviewDTO}" on the review form does not throw NPE
+        model.addAttribute("reviewDTO", new ReviewDTO());
+        model.addAttribute("orderDTO", new OrderDTO());
         return "products/detail";
     }
 
@@ -65,8 +78,19 @@ public class ProductController {
 
     @PreAuthorize("hasAnyRole('SELLER', 'ADMIN')")
     @GetMapping("/{id}/edit")
-    public String editProductForm(@PathVariable Long id, Model model) {
-        var product = productService.getProductById(id);
+    public String editProductForm(@PathVariable Long id,
+                                  @AuthenticationPrincipal UserDetails currentUser,
+                                  Model model) {
+        Product product = productService.getProductById(id);
+
+        // Bug fix #3: gate the edit FORM on ownership, not just the POST
+        boolean isAdmin = currentUser.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        boolean isOwner = product.getSeller().getUsername().equals(currentUser.getUsername());
+        if (!isOwner && !isAdmin) {
+            throw new AccessDeniedException("You do not own this product");
+        }
+
         ProductDTO dto = new ProductDTO();
         dto.setId(product.getId());
         dto.setName(product.getName());
@@ -90,6 +114,7 @@ public class ProductController {
             model.addAttribute("categories", categoryService.getAllCategories());
             return "products/form";
         }
+        // ProductService.updateProduct already checks ownership — no duplication needed
         productService.updateProduct(id, dto, currentUser.getUsername());
         return "redirect:/products";
     }
@@ -98,6 +123,7 @@ public class ProductController {
     @PostMapping("/{id}/delete")
     public String deleteProduct(@PathVariable Long id,
                                 @AuthenticationPrincipal UserDetails currentUser) {
+        // ProductService.deleteProduct already checks ownership
         productService.deleteProduct(id, currentUser.getUsername());
         return "redirect:/products";
     }

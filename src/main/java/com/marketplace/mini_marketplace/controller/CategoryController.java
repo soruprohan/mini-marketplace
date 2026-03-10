@@ -22,6 +22,7 @@ public class CategoryController {
     @GetMapping
     public String listCategories(Model model) {
         model.addAttribute("categories", categoryService.getAllCategories());
+        model.addAttribute("categoryDTO", new CategoryDTO());  // add this line
         return "categories/list";
     }
 

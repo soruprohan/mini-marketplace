@@ -4,17 +4,40 @@
 <head><title>Categories</title></head>
 <body>
 <h2>Categories</h2>
+
 <ul>
-    <li th:each="cat : ${categories}" th:text="${cat.name}"></li>
+    <li th:each="cat : ${categories}">
+        <span th:text="${cat.name}"></span>
+        — <span th:text="${cat.description}"></span>
+
+        <!-- Edit and Delete — ADMIN only -->
+        <sec:authorize access="hasRole('ADMIN')">
+            <form th:action="@{/categories/{id}/delete(id=${cat.id})}" method="post" style="display:inline;"
+                  onsubmit="return confirm('Delete this category?');">
+                <button type="submit">Delete</button>
+            </form>
+        </sec:authorize>
+    </li>
 </ul>
-<div sec:authorize="hasRole('ADMIN')">
+
+<!-- Add Category form — ADMIN only -->
+<sec:authorize access="hasRole('ADMIN')">
     <h3>Add Category</h3>
     <form th:action="@{/categories}" th:object="${categoryDTO}" method="post">
         <input type="text" th:field="*{name}" placeholder="Name"/>
-        <span th:errors="*{categoryId}" style="color:red"></span>
+        <span th:errors="*{name}" style="color:red;"></span>
+        <br/>
         <input type="text" th:field="*{description}" placeholder="Description"/>
+        <br/>
         <button type="submit">Add</button>
     </form>
-</div>
+</sec:authorize>
+
+<br/>
+<a th:href="@{/products}">Back to Products</a>
+
+<form th:action="@{/auth/logout}" method="post" style="margin-top:20px">
+    <button type="submit">Logout</button>
+</form>
 </body>
 </html>
