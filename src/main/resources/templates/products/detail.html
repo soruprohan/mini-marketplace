@@ -1,10 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Product Detail</title></head>
 <body>
-$END$
+<h2 th:text="${product.name}"></h2>
+<p th:text="${product.description}"></p>
+<p>Price: <span th:text="${product.price}"></span></p>
+<p>Stock: <span th:text="${product.stock}"></span></p>
+<p>Category: <span th:text="${product.category.name}"></span></p>
+<p>Seller: <span th:text="${product.seller.username}"></span></p>
+<form th:action="@{/products/{id}/delete(id=${product.id})}" method="post">
+    <button type="submit">Delete</button>
+</form>
+<a th:href="@{/products}">Back to list</a>
 </body>
 </html>

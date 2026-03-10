@@ -1,10 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head><title>Categories</title></head>
 <body>
-$END$
+<h2>Categories</h2>
+<ul>
+    <li th:each="cat : ${categories}" th:text="${cat.name}"></li>
+</ul>
+<div sec:authorize="hasRole('ADMIN')">
+    <h3>Add Category</h3>
+    <form th:action="@{/categories}" th:object="${categoryDTO}" method="post">
+        <input type="text" th:field="*{name}" placeholder="Name"/>
+        <span th:errors="*{categoryId}" style="color:red"></span>
+        <input type="text" th:field="*{description}" placeholder="Description"/>
+        <button type="submit">Add</button>
+    </form>
+</div>
 </body>
 </html>

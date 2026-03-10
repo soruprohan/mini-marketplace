@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Not Found</title></head>
 <body>
-$END$
+<h2>404 — Not Found</h2>
+<p th:text="${message}"></p>
+<a th:href="@{/products}">Go home</a>
 </body>
 </html>
