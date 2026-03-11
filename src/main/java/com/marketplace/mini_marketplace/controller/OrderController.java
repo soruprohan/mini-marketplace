@@ -88,4 +88,18 @@ public class OrderController {
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
         return isAdmin ? "redirect:/orders/all" : "redirect:/orders/my";
     }
+
+    @PreAuthorize("hasRole('BUYER')")
+    @PostMapping("/{id}/receive")
+    public String markAsReceived(@PathVariable Long id,
+                                 @AuthenticationPrincipal UserDetails currentUser,
+                                 RedirectAttributes redirectAttributes) {
+        try {
+            orderService.markAsReceived(id, currentUser.getUsername());
+            redirectAttributes.addFlashAttribute("successMessage", "Order marked as received!");
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/orders/my";
+    }
 }

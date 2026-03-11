@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>My Products – Mini Marketplace</title>
+</head>
+<body>
+<section>
+    <div class="flex items-center justify-between" style="margin-bottom:1.25rem;">
+        <h2 style="margin:0;">My Products</h2>
+        <a class="btn btn-primary" th:href="@{/products/new}">+ Add Product</a>
+    </div>
+
+    <p th:if="${products == null or #lists.isEmpty(products)}" class="text-muted">
+        You have not listed any products yet.
+        <a th:href="@{/products/new}" style="color:#2563eb;">List your first product →</a>
+    </p>
+
+    <div class="card" style="padding:0; overflow:hidden;"
+         th:unless="${products == null or #lists.isEmpty(products)}">
+        <table>
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Listed</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="product : ${products}">
+                <td>
+                    <a th:href="@{/products/{id}(id=${product.id})}"
+                       th:text="${product.name}"
+                       style="color:#2563eb; text-decoration:none; font-weight:500;"></a>
+                </td>
+                <td class="text-muted" style="font-size:.88rem;"
+                    th:text="${product.category != null ? product.category.name : 'Uncategorised'}"></td>
+                <td th:text="'$' + ${product.price}"></td>
+                <td>
+                    <span th:text="${product.stock}"></span>
+                    <span th:if="${product.stock == 0}"
+                          style="color:#dc2626; font-size:.8rem; font-weight:600;"> Out of Stock</span>
+                </td>
+                <td class="text-muted" style="font-size:.85rem;"
+                    th:text="${#temporals.format(product.createdAt, 'dd MMM yyyy')}"></td>
+                <td>
+                    <div class="flex gap-2">
+                        <a class="btn btn-sm btn-outline"
+                           th:href="@{/products/{id}/edit(id=${product.id})}">✏️ Edit</a>
+                        <form th:action="@{/products/{id}/delete(id=${product.id})}" method="post"
+                              onsubmit="return confirm('Delete this product?');">
+                            <button class="btn btn-sm btn-danger" type="submit">🗑 Delete</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-3">
+        <a class="btn btn-outline btn-sm" th:href="@{/products}">← All Products</a>
+    </div>
+</section>
+</body>
+</html>

@@ -1,17 +1,50 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head><title>Products</title></head>
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Products – Mini Marketplace</title>
+</head>
 <body>
-<h2>Products</h2>
-<a sec:authorize="hasRole('SELLER')" th:href="@{/products/new}">Add Product</a>
-<div th:each="product : ${products}">
-    <a th:href="@{/products/{id}(id=${product.id})}" th:text="${product.name}"></a>
-    — <span th:text="${product.price}"></span>
-    — <span th:text="${product.category.name}"></span>
-</div>
-<form th:action="@{/auth/logout}" method="post" style="margin-top:20px">
-    <button type="submit">Logout</button>
-</form>
+<section>
+    <div class="flex items-center justify-between" style="margin-bottom:1.25rem; flex-wrap:wrap; gap:.75rem;">
+        <h2 style="margin:0;">Products</h2>
+        <!-- + Add Product — SELLER only -->
+        <a th:if="${#authorization.expression('hasRole(''SELLER'')')}"
+           class="btn btn-primary" th:href="@{/products/new}">+ Add Product</a>
+    </div>
+
+    <!-- Category filter -->
+    <div style="margin-bottom:1.5rem; display:flex; gap:.5rem; flex-wrap:wrap; align-items:center;">
+        <span class="text-muted" style="font-size:.88rem;">Filter by category:</span>
+        <a class="btn btn-sm btn-outline" th:href="@{/products}">All</a>
+        <a class="btn btn-sm btn-outline"
+           th:each="cat : ${categories}"
+           th:href="@{/products(categoryId=${cat.id})}"
+           th:text="${cat.name}"></a>
+    </div>
+
+    <p th:if="${products == null or #lists.isEmpty(products)}" class="text-muted">
+        No products found.
+    </p>
+
+    <div th:unless="${products == null or #lists.isEmpty(products)}"
+         style="display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:1rem;">
+        <div class="card" th:each="product : ${products}" style="display:flex; flex-direction:column; gap:.5rem;">
+            <div>
+                <a th:href="@{/products/{id}(id=${product.id})}"
+                   th:text="${product.name}"
+                   style="font-weight:600; font-size:1rem; color:#2563eb; text-decoration:none;"></a>
+                <span class="text-muted" style="font-size:.82rem; display:block;"
+                      th:text="${product.category != null ? product.category.name : 'Uncategorised'}"></span>
+            </div>
+            <div style="font-size:1.1rem; font-weight:700; color:#1e293b;"
+                 th:text="'$' + ${product.price}"></div>
+            <div style="font-size:.82rem; color:#64748b;"
+                 th:text="'Stock: ' + ${product.stock}"></div>
+            <a class="btn btn-sm btn-outline" style="margin-top:auto; text-align:center;"
+               th:href="@{/products/{id}(id=${product.id})}">View Details →</a>
+        </div>
+    </div>
+</section>
 </body>
 </html>
