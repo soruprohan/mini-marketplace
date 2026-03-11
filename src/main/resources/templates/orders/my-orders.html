@@ -6,13 +6,17 @@
 </head>
 <body>
 <section>
-    <h2>My Orders</h2>
+    <div class="page-header">
+        <h2>My Orders</h2>
+    </div>
 
-    <p th:if="${#lists.isEmpty(orders)}" class="text-muted">
-        You have no orders yet. <a th:href="@{/products}" style="color:#2563eb;">Browse products →</a>
-    </p>
+    <div th:if="${#lists.isEmpty(orders)}" class="empty-state">
+        <div class="empty-icon">🛒</div>
+        <p class="text-muted mb-2">You have no orders yet.</p>
+        <a th:href="@{/products}" class="btn btn-primary btn-sm">Browse products →</a>
+    </div>
 
-    <div class="card" style="padding:0; overflow:hidden;" th:unless="${#lists.isEmpty(orders)}">
+    <div class="table-wrapper" th:unless="${#lists.isEmpty(orders)}">
         <table>
             <thead>
                 <tr>
@@ -26,11 +30,11 @@
             </thead>
             <tbody>
                 <tr th:each="order : ${orders}">
-                    <td class="text-muted" style="font-size:.85rem;" th:text="${order.id}"></td>
+                    <td class="text-muted text-sm" th:text="${order.id}"></td>
                     <td>
-                        <a th:href="@{/products/{id}(id=${order.product.id})}"
-                           th:text="${order.product.name}"
-                           style="color:#2563eb; text-decoration:none; font-weight:500;"></a>
+                        <a class="link-plain font-medium"
+                           th:href="@{/products/{id}(id=${order.product.id})}"
+                           th:text="${order.product.name}"></a>
                     </td>
                     <td th:text="${order.quantity}"></td>
                     <td>
@@ -38,7 +42,7 @@
                               th:classappend="${order.status == 'PENDING' ? 'badge-pending' : (order.status == 'RECEIVED' ? 'badge-confirmed' : 'badge-cancelled')}"
                               th:text="${order.status}"></span>
                     </td>
-                    <td class="text-muted" style="font-size:.85rem;"
+                    <td class="text-muted text-sm"
                         th:text="${#temporals.format(order.createdAt, 'dd MMM yyyy HH:mm')}"></td>
                     <td>
                         <div class="flex gap-2" th:if="${order.status == 'PENDING'}">
@@ -51,16 +55,14 @@
                                 <button class="btn btn-sm btn-danger" type="submit">Cancel</button>
                             </form>
                         </div>
-                        <span th:if="${order.status != 'PENDING'}" class="text-muted" style="font-size:.82rem;">—</span>
+                        <span th:if="${order.status != 'PENDING'}" class="text-muted text-sm">—</span>
                     </td>
                 </tr>
             </tbody>
         </table>
     </div>
 
-    <div class="mt-3">
-        <a class="btn btn-outline btn-sm" th:href="@{/products}">← Back to Products</a>
-    </div>
+    <a class="back-link" th:href="@{/products}">← Back to Products</a>
 </section>
 </body>
 </html>

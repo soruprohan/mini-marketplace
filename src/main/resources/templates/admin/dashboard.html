@@ -7,38 +7,41 @@
 </head>
 <body>
 <section>
-    <h2>Admin Dashboard</h2>
+    <div class="page-header">
+        <h2>Admin Dashboard</h2>
+    </div>
 
     <!-- Quick-action cards -->
-    <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1rem; margin-bottom:2rem;">
-        <div class="card" style="text-align:center; padding:1.5rem 1rem;">
-            <div style="font-size:2rem; margin-bottom:.5rem;">📦</div>
-            <div style="font-weight:600; margin-bottom:.5rem;">All Products</div>
+    <div class="stat-grid">
+        <div class="stat-card stat-card-products">
+            <div class="stat-icon stat-icon-products">📦</div>
+            <div class="stat-label">All Products</div>
             <a class="btn btn-sm btn-outline" th:href="@{/products}">View Products</a>
         </div>
-        <div class="card" style="text-align:center; padding:1.5rem 1rem;">
-            <div style="font-size:2rem; margin-bottom:.5rem;">🗂️</div>
-            <div style="font-weight:600; margin-bottom:.5rem;">Categories</div>
+        <div class="stat-card stat-card-categories">
+            <div class="stat-icon stat-icon-categories">🗂️</div>
+            <div class="stat-label">Categories</div>
             <a class="btn btn-sm btn-outline" th:href="@{/categories}">Manage Categories</a>
         </div>
-        <div class="card" style="text-align:center; padding:1.5rem 1rem;">
-            <div style="font-size:2rem; margin-bottom:.5rem;">🧾</div>
-            <div style="font-weight:600; margin-bottom:.5rem;">All Orders</div>
+        <div class="stat-card stat-card-orders">
+            <div class="stat-icon stat-icon-orders">🧾</div>
+            <div class="stat-label">All Orders</div>
             <a class="btn btn-sm btn-outline" th:href="@{/orders/all}">View Orders</a>
         </div>
-        <div class="card" style="text-align:center; padding:1.5rem 1rem;">
-            <div style="font-size:2rem; margin-bottom:.5rem;">🧾</div>
-            <div style="font-weight:600; margin-bottom:.5rem;">Roles and Users</div>
+        <div class="stat-card stat-card-users">
+            <div class="stat-icon stat-icon-users">👥</div>
+            <div class="stat-label">Roles and Users</div>
             <a th:href="@{/admin/users}" class="btn btn-sm btn-outline">Manage Users</a>
         </div>
     </div>
 
     <!-- Recent orders preview -->
-    <h3 style="margin-bottom:.75rem;">Recent Orders</h3>
-    <div th:if="${orders == null or #lists.isEmpty(orders)}" class="text-muted" style="margin-bottom:1.5rem;">
-        No orders yet.
+    <h3 class="section-heading">Recent Orders</h3>
+    <div th:if="${orders == null or #lists.isEmpty(orders)}" class="empty-state mb-4">
+        <div class="empty-icon">📋</div>
+        <p class="text-muted">No orders yet.</p>
     </div>
-    <div class="card" style="padding:0; overflow:hidden; margin-bottom:2rem;"
+    <div class="table-wrapper mb-4"
          th:unless="${orders == null or #lists.isEmpty(orders)}">
         <table>
             <thead>
@@ -53,12 +56,11 @@
             </thead>
             <tbody>
                 <tr th:each="order, stat : ${orders}" th:if="${stat.index < 10}">
-                    <td class="text-muted" style="font-size:.85rem;" th:text="${order.id}"></td>
+                    <td class="text-muted text-sm" th:text="${order.id}"></td>
                     <td th:text="${order.buyer.username}"></td>
                     <td>
-                        <a th:href="@{/products/{id}(id=${order.product.id})}"
-                           th:text="${order.product.name}"
-                           style="color:#2563eb; text-decoration:none;"></a>
+                        <a class="link-plain" th:href="@{/products/{id}(id=${order.product.id})}"
+                           th:text="${order.product.name}"></a>
                     </td>
                     <td th:text="${order.quantity}"></td>
                     <td>
@@ -66,24 +68,24 @@
                               th:classappend="${order.status == 'PENDING' ? 'badge-pending' : (order.status == 'CONFIRMED' ? 'badge-confirmed' : 'badge-cancelled')}"
                               th:text="${order.status}"></span>
                     </td>
-                    <td class="text-muted" style="font-size:.85rem;"
+                    <td class="text-muted text-sm"
                         th:text="${#temporals.format(order.createdAt, 'dd MMM yyyy HH:mm')}"></td>
                 </tr>
             </tbody>
         </table>
-        <div style="padding:.75rem 1rem; text-align:right; border-top:1px solid #e2e6ee;">
+        <div class="table-footer">
             <a class="btn btn-sm btn-outline" th:href="@{/orders/all}">See all orders →</a>
         </div>
     </div>
 
     <!-- Categories management preview -->
-    <h3 style="margin-bottom:.75rem;">Categories</h3>
-    <div th:if="${categories == null or #lists.isEmpty(categories)}" class="text-muted" style="margin-bottom:1rem;">
+    <h3 class="section-heading">Categories</h3>
+    <div th:if="${categories == null or #lists.isEmpty(categories)}" class="text-muted mb-3">
         No categories yet.
     </div>
-    <div style="display:flex; flex-wrap:wrap; gap:.5rem; margin-bottom:1rem;"
+    <div class="flex flex-wrap gap-2 mb-3"
          th:unless="${categories == null or #lists.isEmpty(categories)}">
-        <span class="badge" style="background:#e0e7ff; color:#3730a3; font-size:.85rem; padding:.3rem .7rem;"
+        <span class="badge badge-category"
               th:each="cat : ${categories}"
               th:text="${cat.name}"></span>
     </div>

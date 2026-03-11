@@ -6,9 +6,10 @@
 </head>
 <body>
 <section>
-    <div style="max-width:460px; margin:0 auto; padding-top:1rem;">
-        <div class="card">
-            <h2 style="margin-bottom:1.5rem;">Create Account</h2>
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <h2>Create Account</h2>
+            <p class="auth-subtitle">Join our marketplace today.</p>
 
             <form th:action="@{/auth/register}" th:object="${userDTO}" method="post">
                 <div class="form-group">
@@ -35,15 +36,15 @@
                            th:field="*{confirmPassword}" placeholder="Repeat password"/>
                     <div class="form-error" th:errors="*{confirmPassword}"></div>
                 </div>
-                <button class="btn btn-primary" type="submit" style="width:100%; margin-top:.5rem;">
+                <button class="btn btn-primary btn-full mt-2" type="submit">
                     Register
                 </button>
             </form>
 
-            <p style="text-align:center; margin-top:1.25rem; font-size:.9rem; color:#64748b;">
+            <div class="auth-footer">
                 Already have an account?
-                <a th:href="@{/auth/login}" style="color:#2563eb; text-decoration:none; font-weight:500;">Login</a>
-            </p>
+                <a class="link-primary" th:href="@{/auth/login}">Login</a>
+            </div>
         </div>
     </div>
 </section>

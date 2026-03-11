@@ -6,9 +6,10 @@
 </head>
 <body>
 <section>
-    <div style="max-width:420px; margin:0 auto; padding-top:1rem;">
-        <div class="card">
-            <h2 style="margin-bottom:1.5rem;">Sign In</h2>
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <h2>Sign In</h2>
+            <p class="auth-subtitle">Welcome back! Enter your credentials.</p>
 
             <div th:if="${param.error}" class="alert alert-danger">
                 Invalid username or password. Please try again.
@@ -29,15 +30,15 @@
                     <input class="form-control" type="password" id="password" name="password"
                            placeholder="Enter your password" required/>
                 </div>
-                <button class="btn btn-primary" type="submit" style="width:100%; margin-top:.5rem;">
+                <button class="btn btn-primary btn-full mt-2" type="submit">
                     Login
                 </button>
             </form>
 
-            <p style="text-align:center; margin-top:1.25rem; font-size:.9rem; color:#64748b;">
+            <div class="auth-footer">
                 Don't have an account?
-                <a th:href="@{/auth/register}" style="color:#2563eb; text-decoration:none; font-weight:500;">Register</a>
-            </p>
+                <a class="link-primary" th:href="@{/auth/register}">Register</a>
+            </div>
         </div>
     </div>
 </section>
