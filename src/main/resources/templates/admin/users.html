@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::main})}">
+<head>
+    <title>Manage Users</title>
+</head>
+<body>
+<main>
+    <h2>Manage Users</h2>
+
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Current Role</th>
+            <th>Set Role</th>
+            <th>Delete</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${users}">
+            <td th:text="${user.id}"></td>
+            <td th:text="${user.username}"></td>
+            <td th:text="${user.email}"></td>
+            <td>
+                <span th:each="role : ${user.roles}" th:text="${role.name}"></span>
+            </td>
+
+            <!-- Set Role buttons -->
+            <td>
+                <span th:if="${user.username == 'admin'}" class="badge bg-secondary">Protected</span>
+                <span th:unless="${user.username == 'admin'}">
+                    <form th:action="@{/admin/users/{id}/role(id=${user.id})}" method="post" style="display:inline;">
+                        <input type="hidden" name="role" value="ROLE_BUYER"/>
+                        <button type="submit"
+                                th:classappend="${user.roles.![name].contains(T(com.marketplace.mini_marketplace.model.Role.ERole).ROLE_BUYER)} ? 'btn-primary' : 'btn-outline-primary'"
+                                class="btn btn-sm">Buyer</button>
+                    </form>
+                    <form th:action="@{/admin/users/{id}/role(id=${user.id})}" method="post" style="display:inline;">
+                        <input type="hidden" name="role" value="ROLE_SELLER"/>
+                        <button type="submit"
+                                th:classappend="${user.roles.![name].contains(T(com.marketplace.mini_marketplace.model.Role.ERole).ROLE_SELLER)} ? 'btn-success' : 'btn-outline-success'"
+                                class="btn btn-sm">Seller</button>
+                    </form>
+                    <form th:action="@{/admin/users/{id}/role(id=${user.id})}" method="post" style="display:inline;">
+                        <input type="hidden" name="role" value="ROLE_ADMIN"/>
+                        <button type="submit"
+                                th:classappend="${user.roles.![name].contains(T(com.marketplace.mini_marketplace.model.Role.ERole).ROLE_ADMIN)} ? 'btn-danger' : 'btn-outline-danger'"
+                                class="btn btn-sm">Admin</button>
+                    </form>
+                </span>
+            </td>
+
+            <!-- Delete button -->
+            <td>
+                <span th:if="${user.username == 'admin'}" class="badge bg-secondary">Protected</span>
+                <form th:unless="${user.username == 'admin'}"
+                      th:action="@{/admin/users/{id}/delete(id=${user.id})}" method="post">
+                    <button type="submit" class="btn btn-sm btn-dark"
+                            onclick="return confirm('Delete this user? This cannot be undone.')">
+                        Delete
+                    </button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <a th:href="@{/admin/dashboard}" class="btn btn-secondary mt-3">Back to Dashboard</a>
+</main>
+</body>
+</html>
