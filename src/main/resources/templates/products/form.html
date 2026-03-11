@@ -6,15 +6,15 @@
 </head>
 <body>
 <section>
-    <div style="max-width:560px;">
-        <h2 th:text="${productDTO.id != null ? 'Edit Product' : 'New Product'}" style="margin-bottom:1.5rem;"></h2>
+    <div class="form-card">
+        <h2 th:text="${productDTO.id != null ? 'Edit Product' : 'New Product'}"></h2>
 
         <div class="card">
             <form th:action="${productDTO.id != null} ? @{/products/{id}/update(id=${productDTO.id})} : @{/products}"
                   th:object="${productDTO}" method="post">
 
                 <div class="form-group">
-                    <label for="name">Product Name <span style="color:#dc2626;">*</span></label>
+                    <label for="name">Product Name <span class="required-star">*</span></label>
                     <input class="form-control" type="text" id="name" th:field="*{name}"
                            placeholder="e.g. Wireless Headphones"/>
                     <div class="form-error" th:errors="*{name}"></div>
@@ -26,15 +26,15 @@
                               rows="4" placeholder="Describe your product..."></textarea>
                 </div>
 
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                <div class="form-grid-2">
                     <div class="form-group">
-                        <label for="price">Price ($) <span style="color:#dc2626;">*</span></label>
+                        <label for="price">Price ($) <span class="required-star">*</span></label>
                         <input class="form-control" type="number" id="price" th:field="*{price}"
                                step="0.01" min="0.01" placeholder="0.00"/>
                         <div class="form-error" th:errors="*{price}"></div>
                     </div>
                     <div class="form-group">
-                        <label for="stock">Stock <span style="color:#dc2626;">*</span></label>
+                        <label for="stock">Stock <span class="required-star">*</span></label>
                         <input class="form-control" type="number" id="stock" th:field="*{stock}"
                                min="0" placeholder="0"/>
                         <div class="form-error" th:errors="*{stock}"></div>
@@ -42,7 +42,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="categoryId">Category <span style="color:#dc2626;">*</span></label>
+                    <label for="categoryId">Category <span class="required-star">*</span></label>
                     <select class="form-control" id="categoryId" th:field="*{categoryId}">
                         <option value="">-- Select a category --</option>
                         <option th:each="cat : ${categories}"
@@ -52,7 +52,7 @@
                     <div class="form-error" th:errors="*{categoryId}"></div>
                 </div>
 
-                <div class="flex gap-2 mt-2">
+                <div class="flex gap-2 mt-3">
                     <button class="btn btn-primary" type="submit">
                         <span th:text="${productDTO.id != null ? 'Save Changes' : 'Create Product'}">Save</span>
                     </button>

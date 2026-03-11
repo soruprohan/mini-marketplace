@@ -6,50 +6,53 @@
 </head>
 <body>
 <section>
-    <div style="text-align:center; padding: 3rem 1rem;">
-        <h1 style="font-size:2rem; margin-bottom:.5rem;">Welcome to Mini Marketplace</h1>
-        <p class="text-muted" style="font-size:1.05rem; margin-bottom:2rem;">
+    <div class="hero">
+        <h1>Welcome to Mini Marketplace</h1>
+        <p class="hero-subtitle">
             Buy, sell, and review products — all in one place.
         </p>
 
-        <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; margin-bottom:3rem;">
-            <a class="btn btn-primary" th:href="@{/products}" style="font-size:1rem; padding:.6rem 1.5rem;">
+        <div class="hero-actions">
+            <a class="btn btn-primary btn-lg" th:href="@{/products}">
                 Browse Products
             </a>
             <a th:if="${#authorization.expression('!isAuthenticated()')}"
-               class="btn btn-outline" th:href="@{/auth/register}" style="font-size:1rem; padding:.6rem 1.5rem;">
+               class="btn btn-outline btn-lg" th:href="@{/auth/register}">
                 Create Account
             </a>
             <a th:if="${#authorization.expression('hasRole(''SELLER'')')}"
-               class="btn btn-outline" th:href="@{/products/new}" style="font-size:1rem; padding:.6rem 1.5rem;">
+               class="btn btn-outline btn-lg" th:href="@{/products/new}">
                 List a Product
             </a>
         </div>
 
-        <div style="display:flex; gap:1.25rem; justify-content:center; flex-wrap:wrap;">
-            <div class="card" style="width:220px; text-align:left;">
-                <h3>🛍️ Buyers</h3>
-                <p class="text-muted" style="font-size:.88rem; margin-bottom:.75rem;">Browse products, place orders, and leave reviews.</p>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon feature-icon-buyer">🛍️</div>
+                <h3>Buyers</h3>
+                <p class="text-secondary text-sm mb-3">Browse products, place orders, and leave reviews.</p>
                 <a th:if="${#authorization.expression('hasRole(''BUYER'')')}"
                    class="btn btn-sm btn-outline" th:href="@{/orders/my}">My Orders</a>
                 <a th:if="${#authorization.expression('!isAuthenticated()')}"
                    class="btn btn-sm btn-outline" th:href="@{/auth/register}">Sign up as Buyer</a>
             </div>
-            <div class="card" style="width:220px; text-align:left;">
-                <h3>🏪 Sellers</h3>
-                <p class="text-muted" style="font-size:.88rem; margin-bottom:.75rem;">Create and manage your product listings.</p>
+            <div class="feature-card">
+                <div class="feature-icon feature-icon-seller">🏪</div>
+                <h3>Sellers</h3>
+                <p class="text-secondary text-sm mb-3">Create and manage your product listings.</p>
                 <a th:if="${#authorization.expression('hasRole(''SELLER'')')}"
                    class="btn btn-sm btn-outline" th:href="@{/products/new}">+ Add Product</a>
                 <a th:if="${#authorization.expression('!isAuthenticated()')}"
                    class="btn btn-sm btn-outline" th:href="@{/auth/register}">Get started</a>
             </div>
-            <div class="card" style="width:220px; text-align:left;">
-                <h3>🔑 Admins</h3>
-                <p class="text-muted" style="font-size:.88rem; margin-bottom:.75rem;">Manage categories, users, and all orders.</p>
+            <div class="feature-card">
+                <div class="feature-icon feature-icon-admin">🔑</div>
+                <h3>Admins</h3>
+                <p class="text-secondary text-sm mb-3">Manage categories, users, and all orders.</p>
                 <a th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
                    class="btn btn-sm btn-outline" th:href="@{/admin/dashboard}">Dashboard</a>
                 <span th:if="${#authorization.expression('!hasRole(''ADMIN'')')}"
-                      class="text-muted" style="font-size:.82rem;">Admin access required</span>
+                      class="text-muted text-xs">Admin access required</span>
             </div>
         </div>
     </div>
