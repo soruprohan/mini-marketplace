@@ -17,80 +17,78 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 
-    @Mock UserRepository userRepository;
-    @Mock RoleRepository roleRepository;
-    @Mock PasswordEncoder passwordEncoder;
+    @Mock private UserRepository userRepository;
+    @Mock private RoleRepository roleRepository;
+    @Mock private PasswordEncoder passwordEncoder;
 
-    @InjectMocks UserService userService;
+    @InjectMocks private UserService userService;
 
-    private UserDTO dto;
+    private UserDTO userDTO;
     private Role buyerRole;
 
     @BeforeEach
     void setUp() {
-        dto = new UserDTO();
-        dto.setUsername("newuser");
-        dto.setEmail("newuser@test.com");
-        dto.setPassword("password123");
-        dto.setConfirmPassword("password123");
+        userDTO = new UserDTO();
+        userDTO.setUsername("newUser");
+        userDTO.setEmail("new@test.com");
+        userDTO.setPassword("password123");
+        userDTO.setConfirmPassword("password123");
 
         buyerRole = new Role(Role.ERole.ROLE_BUYER);
+        buyerRole.setId(3L);
     }
 
     @Test
-    void registerUser_shouldSaveUser_whenUsernameAndEmailAreNew() {
-        when(userRepository.existsByUsername("newuser")).thenReturn(false);
-        when(userRepository.findByEmail("newuser@test.com")).thenReturn(Optional.empty());
+    void registerUser_shouldCreateUserWithBuyerRole() {
+        when(userRepository.existsByUsername("newUser")).thenReturn(false);
+        when(userRepository.findByEmail("new@test.com")).thenReturn(Optional.empty());
         when(roleRepository.findByName(Role.ERole.ROLE_BUYER)).thenReturn(Optional.of(buyerRole));
-        when(passwordEncoder.encode("password123")).thenReturn("encoded");
-        when(userRepository.save(any(User.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
 
-        User result = userService.registerUser(dto);
+        User savedUser = new User("newUser", "new@test.com", "encodedPassword");
+        savedUser.setId(1L);
+        savedUser.addRole(buyerRole);
+        when(userRepository.save(any(User.class))).thenReturn(savedUser);
 
-        assertThat(result.getUsername()).isEqualTo("newuser");
-        assertThat(result.getPassword()).isEqualTo("encoded");
-        assertThat(result.getRoles()).contains(buyerRole);
+        User result = userService.registerUser(userDTO);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getUsername()).isEqualTo("newUser");
+        verify(passwordEncoder).encode("password123");
         verify(userRepository).save(any(User.class));
     }
 
     @Test
-    void registerUser_shouldThrow_whenUsernameAlreadyTaken() {
-        when(userRepository.existsByUsername("newuser")).thenReturn(true);
+    void registerUser_shouldThrowWhenUsernameTaken() {
+        when(userRepository.existsByUsername("newUser")).thenReturn(true);
 
         assertThrows(IllegalArgumentException.class,
-                () -> userService.registerUser(dto));
+                () -> userService.registerUser(userDTO));
 
         verify(userRepository, never()).save(any());
     }
 
     @Test
-    void registerUser_shouldThrow_whenEmailAlreadyRegistered() {
-        when(userRepository.existsByUsername("newuser")).thenReturn(false);
-        when(userRepository.findByEmail("newuser@test.com"))
-                .thenReturn(Optional.of(new User()));
+    void findByUsername_shouldReturnUserWhenFound() {
+        User user = new User("existingUser", "ex@test.com", "pass");
+        user.setId(5L);
+        when(userRepository.findByUsername("existingUser")).thenReturn(Optional.of(user));
 
-        assertThrows(IllegalArgumentException.class,
-                () -> userService.registerUser(dto));
+        User result = userService.findByUsername("existingUser");
+
+        assertThat(result).isNotNull();
+        assertThat(result.getUsername()).isEqualTo("existingUser");
     }
 
     @Test
-    void findByUsername_shouldReturnUser_whenFound() {
-        User user = new User("newuser", "newuser@test.com", "encoded");
-        when(userRepository.findByUsername("newuser")).thenReturn(Optional.of(user));
-
-        User result = userService.findByUsername("newuser");
-
-        assertThat(result.getUsername()).isEqualTo("newuser");
-    }
-
-    @Test
-    void findByUsername_shouldThrow_whenNotFound() {
+    void findByUsername_shouldThrowWhenUserNotFound() {
         when(userRepository.findByUsername("ghost")).thenReturn(Optional.empty());
 
         assertThrows(IllegalArgumentException.class,

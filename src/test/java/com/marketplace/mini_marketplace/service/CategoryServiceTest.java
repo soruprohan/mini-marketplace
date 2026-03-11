@@ -4,6 +4,7 @@ import com.marketplace.mini_marketplace.dto.CategoryDTO;
 import com.marketplace.mini_marketplace.exception.ResourceNotFoundException;
 import com.marketplace.mini_marketplace.model.Category;
 import com.marketplace.mini_marketplace.repository.CategoryRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,30 +21,38 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class CategoryServiceTest {
 
-    @Mock CategoryRepository categoryRepository;
+    @Mock private CategoryRepository categoryRepository;
 
-    @InjectMocks CategoryService categoryService;
+    @InjectMocks private CategoryService categoryService;
 
-    @Test
-    void createCategory_shouldSaveAndReturn() {
-        CategoryDTO dto = new CategoryDTO();
-        dto.setName("Books");
-        dto.setDescription("All kinds of books");
+    private CategoryDTO categoryDTO;
+    private Category category;
 
-        Category saved = new Category();
-        saved.setId(1L);
-        saved.setName("Books");
+    @BeforeEach
+    void setUp() {
+        categoryDTO = new CategoryDTO();
+        categoryDTO.setName("Books");
+        categoryDTO.setDescription("All kinds of books");
 
-        when(categoryRepository.save(any(Category.class))).thenReturn(saved);
-
-        Category result = categoryService.createCategory(dto);
-
-        assertThat(result.getName()).isEqualTo("Books");
-        verify(categoryRepository).save(any(Category.class));
+        category = new Category();
+        category.setId(1L);
+        category.setName("Books");
+        category.setDescription("All kinds of books");
     }
 
     @Test
-    void deleteCategory_shouldThrow_whenCategoryNotFound() {
+    void createCategory_shouldSaveAndReturnCategory() {
+        when(categoryRepository.save(any(Category.class))).thenReturn(category);
+
+        Category result = categoryService.createCategory(categoryDTO);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getName()).isEqualTo("Books");
+        verify(categoryRepository, times(1)).save(any(Category.class));
+    }
+
+    @Test
+    void deleteCategory_shouldThrowWhenCategoryNotFound() {
         when(categoryRepository.findById(999L)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class,
