@@ -76,6 +76,13 @@ public class ProductController {
         return "redirect:/products";
     }
 
+    @PreAuthorize("hasRole('SELLER')")
+    @GetMapping("/my")
+    public String myProducts(@AuthenticationPrincipal UserDetails currentUser, Model model) {
+        model.addAttribute("products", productService.getProductsBySeller(currentUser.getUsername()));
+        return "products/my-products";
+    }
+
     @PreAuthorize("hasAnyRole('SELLER', 'ADMIN')")
     @GetMapping("/{id}/edit")
     public String editProductForm(@PathVariable Long id,

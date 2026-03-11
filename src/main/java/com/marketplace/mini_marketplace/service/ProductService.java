@@ -34,6 +34,13 @@ public class ProductService {
         return productRepository.findAll();
     }
 
+
+    public List<Product> getProductsBySeller(String sellerUsername) {
+        User seller = userRepository.findByUsername(sellerUsername)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + sellerUsername));
+        return productRepository.findBySellerId(seller.getId());
+    }
+
     public Product getProductById(Long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found: " + id));

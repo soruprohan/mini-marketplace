@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Home – Mini Marketplace</title>
+</head>
+<body>
+<section>
+    <div style="text-align:center; padding: 3rem 1rem;">
+        <h1 style="font-size:2rem; margin-bottom:.5rem;">Welcome to Mini Marketplace</h1>
+        <p class="text-muted" style="font-size:1.05rem; margin-bottom:2rem;">
+            Buy, sell, and review products — all in one place.
+        </p>
+
+        <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; margin-bottom:3rem;">
+            <a class="btn btn-primary" th:href="@{/products}" style="font-size:1rem; padding:.6rem 1.5rem;">
+                Browse Products
+            </a>
+            <a th:if="${#authorization.expression('!isAuthenticated()')}"
+               class="btn btn-outline" th:href="@{/auth/register}" style="font-size:1rem; padding:.6rem 1.5rem;">
+                Create Account
+            </a>
+            <a th:if="${#authorization.expression('hasRole(''SELLER'')')}"
+               class="btn btn-outline" th:href="@{/products/new}" style="font-size:1rem; padding:.6rem 1.5rem;">
+                List a Product
+            </a>
+        </div>
+
+        <div style="display:flex; gap:1.25rem; justify-content:center; flex-wrap:wrap;">
+            <div class="card" style="width:220px; text-align:left;">
+                <h3>🛍️ Buyers</h3>
+                <p class="text-muted" style="font-size:.88rem; margin-bottom:.75rem;">Browse products, place orders, and leave reviews.</p>
+                <a th:if="${#authorization.expression('hasRole(''BUYER'')')}"
+                   class="btn btn-sm btn-outline" th:href="@{/orders/my}">My Orders</a>
+                <a th:if="${#authorization.expression('!isAuthenticated()')}"
+                   class="btn btn-sm btn-outline" th:href="@{/auth/register}">Sign up as Buyer</a>
+            </div>
+            <div class="card" style="width:220px; text-align:left;">
+                <h3>🏪 Sellers</h3>
+                <p class="text-muted" style="font-size:.88rem; margin-bottom:.75rem;">Create and manage your product listings.</p>
+                <a th:if="${#authorization.expression('hasRole(''SELLER'')')}"
+                   class="btn btn-sm btn-outline" th:href="@{/products/new}">+ Add Product</a>
+                <a th:if="${#authorization.expression('!isAuthenticated()')}"
+                   class="btn btn-sm btn-outline" th:href="@{/auth/register}">Get started</a>
+            </div>
+            <div class="card" style="width:220px; text-align:left;">
+                <h3>🔑 Admins</h3>
+                <p class="text-muted" style="font-size:.88rem; margin-bottom:.75rem;">Manage categories, users, and all orders.</p>
+                <a th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
+                   class="btn btn-sm btn-outline" th:href="@{/admin/dashboard}">Dashboard</a>
+                <span th:if="${#authorization.expression('!hasRole(''ADMIN'')')}"
+                      class="text-muted" style="font-size:.82rem;">Admin access required</span>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

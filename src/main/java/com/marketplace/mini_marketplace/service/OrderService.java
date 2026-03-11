@@ -77,10 +77,9 @@ public class OrderService {
 
         boolean isAdmin = currentUser.getRoles().stream()
                 .anyMatch(r -> r.getName().name().equals("ROLE_ADMIN"));
-        boolean isOwner = order.getBuyer().getUsername().equals(buyerUsername);
 
-        if (!isOwner && !isAdmin) {
-            throw new AccessDeniedException("You do not have permission to cancel this order");
+        if (!isAdmin) {
+            verifyOrderOwner(order, buyerUsername);
         }
 
         if ("CANCELLED".equals(order.getStatus())) {
@@ -94,5 +93,26 @@ public class OrderService {
 
         order.setStatus("CANCELLED");
         orderRepository.save(order);
+    }
+
+    @Transactional
+    public void markAsReceived(Long orderId, String buyerUsername) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found: " + orderId));
+
+        verifyOrderOwner(order, buyerUsername);
+
+        if (!"PENDING".equals(order.getStatus())) {
+            throw new IllegalStateException("Only pending orders can be marked as received");
+        }
+
+        order.setStatus("RECEIVED");
+        orderRepository.save(order);
+    }
+
+    private void verifyOrderOwner(Order order, String username) {
+        if (!order.getBuyer().getUsername().equals(username)) {
+            throw new AccessDeniedException("You do not have permission to modify this order");
+        }
     }
 }
