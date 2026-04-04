@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Edit Category – Mini Marketplace</title>
+</head>
+<body>
+<section>
+    <div class="page-header">
+        <h2>Edit Category</h2>
+    </div>
+
+    <div class="form-card">
+        <div class="card">
+            <form th:action="@{/categories/{id}/update(id=${categoryId})}"
+                  th:object="${categoryDTO}"
+                  method="post">
+                <div class="form-group">
+                    <label for="name">Name <span class="required-star">*</span></label>
+                    <input class="form-control" type="text" id="name" th:field="*{name}"
+                           placeholder="e.g. Electronics"/>
+                    <div class="form-error" th:errors="*{name}"></div>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <input class="form-control" type="text" id="description" th:field="*{description}"
+                           placeholder="Optional description"/>
+                    <div class="form-error" th:errors="*{description}"></div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" type="submit">Update Category</button>
+                    <a class="btn btn-outline" th:href="@{/categories}">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <a class="back-link" th:href="@{/categories}">← Back to Categories</a>
+</section>
+</body>
+</html>
+

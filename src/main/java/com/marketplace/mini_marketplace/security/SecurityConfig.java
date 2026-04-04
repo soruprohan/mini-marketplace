@@ -41,7 +41,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**", "/css/**", "/js/**", "/images/**").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/products", "/products/{id}", "/categories").permitAll()
-                        .anyRequest().authenticated()
+                        .anyRequest().authenticated() //everything else needs logging in
                 )
                 .formLogin(form -> form
                         .loginPage("/auth/login")

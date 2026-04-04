@@ -45,7 +45,7 @@ public class AuthController {
             redirectAttributes.addFlashAttribute("success", "Registration successful! Please log in.");
             return "redirect:/auth/login";
         } catch (IllegalArgumentException e) {
-            result.rejectValue("username", "error.userDTO", e.getMessage());
+            result.rejectValue("username", "error.userDTO", e.getMessage()); //username already taken
             return "auth/register";
         }
     }

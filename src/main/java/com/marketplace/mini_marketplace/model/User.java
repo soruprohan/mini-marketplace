@@ -39,6 +39,7 @@ public class User {
     @Column(nullable = false)
     private boolean enabled = true;
 
+    //whenever you load a user, hibernate immediately loads their roles too in the same query
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",

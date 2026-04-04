@@ -24,10 +24,15 @@
             <div class="flex gap-2 mt-2">
                 <a class="btn btn-sm btn-outline"
                    th:href="@{/products(categoryId=${cat.id})}">Browse</a>
+                <!-- Edit — ADMIN only -->
+                <a th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
+                   class="btn btn-sm btn-secondary"
+                   th:href="@{/categories/{id}/edit(id=${cat.id})}">Edit</a>
                 <!-- Delete — ADMIN only -->
                 <form th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
                       th:action="@{/categories/{id}/delete(id=${cat.id})}" method="post"
-                      onsubmit="return confirm('Delete this category?');">
+                      onsubmit="return confirm('Delete this category?');"
+                      style="display: inline;">
                     <button class="btn btn-sm btn-danger" type="submit">Delete</button>
                 </form>
             </div>

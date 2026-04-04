@@ -42,8 +42,11 @@ public class CategoryController {
     @PostMapping("/{id}/update")
     public String updateCategory(@PathVariable Long id,
                                  @Valid @ModelAttribute("categoryDTO") CategoryDTO dto,
-                                 BindingResult result) {
-        if (result.hasErrors()) return "categories/list";
+                                 BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("categoryId", id);
+            return "categories/edit";
+        }
         categoryService.updateCategory(id, dto);
         return "redirect:/categories";
     }
@@ -53,5 +56,17 @@ public class CategoryController {
     public String deleteCategory(@PathVariable Long id) {
         categoryService.deleteCategory(id);
         return "redirect:/categories";
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/{id}/edit")
+    public String editCategoryForm(@PathVariable Long id, Model model) {
+        var category = categoryService.getCategoryById(id);
+        var dto = new CategoryDTO();
+        dto.setName(category.getName());
+        dto.setDescription(category.getDescription());
+        model.addAttribute("categoryDTO", dto);
+        model.addAttribute("categoryId", id);
+        return "categories/edit";
     }
 }
