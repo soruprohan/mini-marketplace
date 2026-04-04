@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>500 Server Error – Mini Marketplace</title>
+</head>
+<body>
+<section>
+    <div class="error-page">
+        <div class="error-icon error-icon-500">⚠️</div>
+        <h2>500 — Server Error</h2>
+        <p th:text="${message} ?: 'Something went wrong on our end. Please try again.'"></p>
+        <a class="btn btn-primary" th:href="@{/products}">Go to Products</a>
+    </div>
+</section>
+</body>
+</html>

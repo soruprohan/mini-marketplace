@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Register – Mini Marketplace</title>
+</head>
+<body>
+<section>
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <h2>Create Account</h2>
+            <p class="auth-subtitle">Join our marketplace today.</p>
+
+            <form th:action="@{/auth/register}" th:object="${userDTO}" method="post">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input class="form-control" type="text" id="username" th:field="*{username}"
+                           placeholder="Choose a username" autofocus/>
+                    <div class="form-error" th:errors="*{username}"></div>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input class="form-control" type="email" id="email" th:field="*{email}"
+                           placeholder="you@example.com"/>
+                    <div class="form-error" th:errors="*{email}"></div>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input class="form-control" type="password" id="password" th:field="*{password}"
+                           placeholder="At least 6 characters"/>
+                    <div class="form-error" th:errors="*{password}"></div>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input class="form-control" type="password" id="confirmPassword"
+                           th:field="*{confirmPassword}" placeholder="Repeat password"/>
+                    <div class="form-error" th:errors="*{confirmPassword}"></div>
+                </div>
+                <button class="btn btn-primary btn-full mt-2" type="submit">
+                    Register
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                Already have an account?
+                <a class="link-primary" th:href="@{/auth/login}">Login</a>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Admin Dashboard – Mini Marketplace</title>
+</head>
+<body>
+<section>
+    <div class="page-header">
+        <h2>Admin Dashboard</h2>
+    </div>
+
+    <!-- Quick-action cards -->
+    <div class="stat-grid">
+        <div class="stat-card stat-card-products">
+            <div class="stat-icon stat-icon-products">📦</div>
+            <div class="stat-label">All Products</div>
+            <a class="btn btn-sm btn-outline" th:href="@{/products}">View Products</a>
+        </div>
+        <div class="stat-card stat-card-categories">
+            <div class="stat-icon stat-icon-categories">🗂️</div>
+            <div class="stat-label">Categories</div>
+            <a class="btn btn-sm btn-outline" th:href="@{/categories}">Manage Categories</a>
+        </div>
+        <div class="stat-card stat-card-orders">
+            <div class="stat-icon stat-icon-orders">🧾</div>
+            <div class="stat-label">All Orders</div>
+            <a class="btn btn-sm btn-outline" th:href="@{/orders/all}">View Orders</a>
+        </div>
+        <div class="stat-card stat-card-users">
+            <div class="stat-icon stat-icon-users">👥</div>
+            <div class="stat-label">Roles and Users</div>
+            <a th:href="@{/admin/users}" class="btn btn-sm btn-outline">Manage Users</a>
+        </div>
+    </div>
+
+    <!-- Recent orders preview -->
+    <h3 class="section-heading">Recent Orders</h3>
+    <div th:if="${orders == null or #lists.isEmpty(orders)}" class="empty-state mb-4">
+        <div class="empty-icon">📋</div>
+        <p class="text-muted">No orders yet.</p>
+    </div>
+    <div class="table-wrapper mb-4"
+         th:unless="${orders == null or #lists.isEmpty(orders)}">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Buyer</th>
+                    <th>Product</th>
+                    <th>Qty</th>
+                    <th>Status</th>
+                    <th>Placed</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="order, stat : ${orders}" th:if="${stat.index < 10}">
+                    <td class="text-muted text-sm" th:text="${order.id}"></td>
+                    <td th:text="${order.buyer.username}"></td>
+                    <td>
+                        <a class="link-plain" th:href="@{/products/{id}(id=${order.product.id})}"
+                           th:text="${order.product.name}"></a>
+                    </td>
+                    <td th:text="${order.quantity}"></td>
+                    <td>
+                        <span class="badge"
+                              th:classappend="${order.status == 'PENDING' ? 'badge-pending' : (order.status == 'CONFIRMED' ? 'badge-confirmed' : 'badge-cancelled')}"
+                              th:text="${order.status}"></span>
+                    </td>
+                    <td class="text-muted text-sm"
+                        th:text="${#temporals.format(order.createdAt, 'dd MMM yyyy HH:mm')}"></td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="table-footer">
+            <a class="btn btn-sm btn-outline" th:href="@{/orders/all}">See all orders →</a>
+        </div>
+    </div>
+
+    <!-- Categories management preview -->
+    <h3 class="section-heading">Categories</h3>
+    <div th:if="${categories == null or #lists.isEmpty(categories)}" class="text-muted mb-3">
+        No categories yet.
+    </div>
+    <div class="flex flex-wrap gap-2 mb-3"
+         th:unless="${categories == null or #lists.isEmpty(categories)}">
+        <span class="badge badge-category"
+              th:each="cat : ${categories}"
+              th:text="${cat.name}"></span>
+    </div>
+    <a class="btn btn-sm btn-outline" th:href="@{/categories}">Manage Categories →</a>
+</section>
+</body>
+</html>

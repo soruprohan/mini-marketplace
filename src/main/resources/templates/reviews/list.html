@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Reviews – Mini Marketplace</title>
+</head>
+<body>
+<section>
+    <div class="page-header">
+        <h2>Reviews</h2>
+    </div>
+
+    <div th:if="${#lists.isEmpty(reviews)}" class="empty-state">
+        <div class="empty-icon">💬</div>
+        <p class="text-muted">No reviews yet for this product.</p>
+    </div>
+
+    <div th:each="review : ${reviews}" class="review-item">
+        <div class="review-header">
+            <div class="review-author">
+                <div class="review-avatar"
+                     th:text="${#strings.substring(review.buyer.username, 0, 1).toUpperCase()}"></div>
+                <div class="review-meta">
+                    <strong th:text="${review.buyer.username}"></strong>
+                    <span class="review-date"
+                          th:text="${#temporals.format(review.createdAt, 'dd MMM yyyy')}"></span>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="review-stars">
+                    <span th:each="i : ${#numbers.sequence(1,5)}"
+                          th:text="${i <= review.rating ? '★' : '☆'}"
+                          th:classappend="${i <= review.rating ? '' : 'star-empty'}"></span>
+                </span>
+                <!-- Delete: owner or admin -->
+                <div th:if="${#authorization.expression('hasRole(''ADMIN'')') or (#authorization.expression('isAuthenticated()') and review.buyer.username == #authentication.name)}">
+                    <form th:action="@{/reviews/{id}/delete(id=${review.id})}" method="post"
+                          onsubmit="return confirm('Delete this review?');">
+                        <input type="hidden" name="productId" th:value="${productId}"/>
+                        <button class="btn btn-ghost btn-sm" type="submit">✕ Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <p class="review-comment" th:text="${review.comment}"></p>
+    </div>
+
+    <a class="back-link" th:href="@{/products/{id}(id=${productId})}">← Back to Product</a>
+</section>
+</body>
+</html>

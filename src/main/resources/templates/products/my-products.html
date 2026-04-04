@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>My Products – Mini Marketplace</title>
+</head>
+<body>
+<section>
+    <div class="page-header">
+        <h2>My Products</h2>
+        <a class="btn btn-primary" th:href="@{/products/new}">+ Add Product</a>
+    </div>
+
+    <div th:if="${products == null or #lists.isEmpty(products)}" class="empty-state">
+        <div class="empty-icon">📦</div>
+        <p class="text-muted">You have not listed any products yet.</p>
+        <a th:href="@{/products/new}" class="btn btn-primary btn-sm mt-2">List your first product →</a>
+    </div>
+
+    <div class="table-wrapper"
+         th:unless="${products == null or #lists.isEmpty(products)}">
+        <table>
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Listed</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="product : ${products}">
+                <td>
+                    <a class="link-plain font-medium"
+                       th:href="@{/products/{id}(id=${product.id})}"
+                       th:text="${product.name}"></a>
+                </td>
+                <td class="text-muted text-sm"
+                    th:text="${product.category != null ? product.category.name : 'Uncategorised'}"></td>
+                <td class="font-bold" th:text="'$' + ${product.price}"></td>
+                <td>
+                    <span th:text="${product.stock}"></span>
+                    <span th:if="${product.stock == 0}"
+                          class="badge badge-cancelled" style="margin-left:.35rem;">Out of Stock</span>
+                </td>
+                <td class="text-muted text-sm"
+                    th:text="${#temporals.format(product.createdAt, 'dd MMM yyyy')}"></td>
+                <td>
+                    <div class="flex gap-2">
+                        <a class="btn btn-sm btn-outline"
+                           th:href="@{/products/{id}/edit(id=${product.id})}">✏️ Edit</a>
+                        <form th:action="@{/products/{id}/delete(id=${product.id})}" method="post"
+                              onsubmit="return confirm('Delete this product?');">
+                            <button class="btn btn-sm btn-danger" type="submit">🗑 Delete</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <a class="back-link" th:href="@{/products}">← All Products</a>
+</section>
+</body>
+</html>

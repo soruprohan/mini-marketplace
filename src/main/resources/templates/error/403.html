@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>403 Access Denied – Mini Marketplace</title>
+</head>
+<body>
+<section>
+    <div class="error-page">
+        <div class="error-icon error-icon-403">🔒</div>
+        <h2>403 — Access Denied</h2>
+        <p th:text="${message} ?: 'You do not have permission to view this page.'"></p>
+        <a class="btn btn-primary" th:href="@{/products}">Go to Products</a>
+    </div>
+</section>
+</body>
+</html>

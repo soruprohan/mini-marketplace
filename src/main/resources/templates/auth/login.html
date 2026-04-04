@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Login – Mini Marketplace</title>
+</head>
+<body>
+<section>
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <h2>Sign In</h2>
+            <p class="auth-subtitle">Welcome back! Enter your credentials.</p>
+
+            <div th:if="${param.error}" class="alert alert-danger">
+                Invalid username or password. Please try again.
+            </div>
+            <div th:if="${param.logout}" class="alert alert-success">
+                You have been logged out successfully.
+            </div>
+            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+            <form th:action="@{/auth/login}" method="post">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input class="form-control" type="text" id="username" name="username"
+                           placeholder="Enter your username" required autofocus/>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input class="form-control" type="password" id="password" name="password"
+                           placeholder="Enter your password" required/>
+                </div>
+                <button class="btn btn-primary btn-full mt-2" type="submit">
+                    Login
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                Don't have an account?
+                <a class="link-primary" th:href="@{/auth/register}">Register</a>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

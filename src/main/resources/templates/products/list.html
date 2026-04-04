@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Products – Mini Marketplace</title>
+</head>
+<body>
+<section>
+    <div class="page-header">
+        <h2>Products</h2>
+        <!-- + Add Product — SELLER only -->
+        <a th:if="${#authorization.expression('hasRole(''SELLER'')')}"
+           class="btn btn-primary" th:href="@{/products/new}">+ Add Product</a>
+    </div>
+
+    <!-- Category filter -->
+    <div class="filter-bar">
+        <span class="filter-label">Filter:</span>
+        <a class="filter-btn" th:href="@{/products}">All</a>
+        <a class="filter-btn"
+           th:each="cat : ${categories}"
+           th:href="@{/products(categoryId=${cat.id})}"
+           th:text="${cat.name}"></a>
+    </div>
+
+    <div th:if="${products == null or #lists.isEmpty(products)}" class="empty-state">
+        <div class="empty-icon">📦</div>
+        <p class="text-muted">No products found.</p>
+    </div>
+
+    <div th:unless="${products == null or #lists.isEmpty(products)}" class="product-grid">
+        <div class="product-card" th:each="product : ${products}">
+            <div class="product-image-placeholder">📦</div>
+            <div>
+                <a class="product-name" th:href="@{/products/{id}(id=${product.id})}"
+                   th:text="${product.name}"></a>
+                <span class="product-category"
+                      th:text="${product.category != null ? product.category.name : 'Uncategorised'}"></span>
+            </div>
+            <div class="product-price" th:text="'$' + ${product.price}"></div>
+            <div class="product-stock">
+                Stock: <span th:text="${product.stock}"></span>
+                <span th:if="${product.stock == 0}" class="out-of-stock"> — Out of Stock</span>
+            </div>
+            <a class="btn btn-sm btn-outline" style="margin-top:auto; text-align:center;"
+               th:href="@{/products/{id}(id=${product.id})}">View Details →</a>
+        </div>
+    </div>
+</section>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:fragment="layout(title, content)">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:replace="${title}">Mini Marketplace</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link th:href="@{/css/style.css}" rel="stylesheet"/>
+</head>
+<body>
+
+<nav class="navbar">
+    <a class="nav-brand" th:href="@{/products}">
+        <span class="brand-icon">🛒</span>
+        Mini Marketplace
+    </a>
+
+    <input type="checkbox" id="nav-toggle" class="nav-toggle" style="display:none;"/>
+    <label for="nav-toggle" class="nav-toggle-label"><span></span></label>
+
+    <div class="nav-links">
+        <a th:href="@{/products}">Products</a>
+        <a th:href="@{/categories}">Categories</a>
+
+        <!-- SELLER only -->
+        <a th:if="${#authorization.expression('hasRole(''SELLER'')')}" th:href="@{/products/new}">+ New Product</a>
+        <a th:if="${#authorization.expression('hasRole(''SELLER'')')}" th:href="@{/products/my}">My Products</a>
+
+        <!-- BUYER only -->
+        <a th:if="${#authorization.expression('hasRole(''BUYER'')')}" th:href="@{/orders/my}">My Orders</a>
+
+        <!-- ADMIN only -->
+        <a th:if="${#authorization.expression('hasRole(''ADMIN'')')}" th:href="@{/orders/all}">All Orders</a>
+        <a th:if="${#authorization.expression('hasRole(''ADMIN'')')}" th:href="@{/admin/dashboard}">Dashboard</a>
+    </div>
+
+    <div class="nav-right">
+        <!-- Logged in -->
+        <th:block th:if="${#authorization.expression('isAuthenticated()')}">
+            <span class="nav-user" th:text="'Hi, ' + ${#authentication.name}"></span>
+            <form th:action="@{/auth/logout}" method="post" style="display:inline;">
+                <button class="logout-btn" type="submit">Logout</button>
+            </form>
+        </th:block>
+
+        <!-- Not logged in -->
+        <th:block th:if="${#authorization.expression('!isAuthenticated()')}">
+            <a th:href="@{/auth/login}">Login</a>
+            <a th:href="@{/auth/register}">Register</a>
+        </th:block>
+    </div>
+</nav>
+
+<main>
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}"   class="alert alert-danger"  th:text="${errorMessage}"></div>
+    <div th:if="${infoMessage}"    class="alert alert-info"    th:text="${infoMessage}"></div>
+
+    <div th:replace="${content}">Page content goes here.</div>
+</main>
+
+<footer class="site-footer">
+    &copy; 2026 Mini Marketplace &mdash; CSE 3220
+</footer>
+
+</body>
+</html>

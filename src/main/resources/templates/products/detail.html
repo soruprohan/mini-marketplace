@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title th:text="${product.name} + ' – Mini Marketplace'">Product Detail</title>
+</head>
+<body>
+<section>
+    <div th:if="${reviewError}" class="alert alert-danger" th:text="${reviewError}"></div>
+
+    <div class="product-detail">
+
+        <!-- Left: product info -->
+        <div class="product-info">
+            <span class="product-category-label"
+                  th:text="${product.category != null ? product.category.name : 'Uncategorised'}"></span>
+            <h2 class="product-title" th:text="${product.name}"></h2>
+            <p class="product-desc"
+               th:text="${product.description ?: 'No description provided.'}"></p>
+
+            <div class="product-price-tag" th:text="'$' + ${product.price}"></div>
+
+            <p class="product-meta">
+                <strong>Stock:</strong>
+                <span th:text="${product.stock}"></span>
+                <span th:if="${product.stock == 0}" style="color:var(--danger); font-weight:700;"> — Out of Stock</span>
+            </p>
+            <p class="product-meta">
+                <strong>Seller:</strong>
+                <span th:text="${product.seller.username}"></span>
+            </p>
+            <p class="product-date"
+               th:text="'Listed ' + ${#temporals.format(product.createdAt, 'dd MMM yyyy')}"></p>
+
+            <!-- Edit/Delete — own SELLER or ADMIN only -->
+            <div class="flex gap-2 mt-3"
+                 th:with="isSeller=${#authorization.expression('hasRole(''SELLER'')') and product.seller.username == #authentication.name},
+                           isAdmin=${#authorization.expression('hasRole(''ADMIN'')')}">
+                <div th:if="${isSeller or isAdmin}" class="flex gap-2">
+                    <a class="btn btn-sm btn-outline"
+                       th:href="@{/products/{id}/edit(id=${product.id})}">✏️ Edit</a>
+                    <form th:action="@{/products/{id}/delete(id=${product.id})}" method="post"
+                          onsubmit="return confirm('Delete this product?');">
+                        <button class="btn btn-sm btn-danger" type="submit">🗑 Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: order panel — BUYER only -->
+        <div class="order-panel">
+            <div class="card" th:if="${#authorization.expression('hasRole(''BUYER'')')}">
+                <h3>Place an Order</h3>
+                <form th:action="@{/orders}" method="post">
+                    <input type="hidden" name="productId" th:value="${product.id}"/>
+                    <div class="form-group">
+                        <label for="quantity">Quantity</label>
+                        <input class="form-control" type="number" id="quantity" name="quantity"
+                               min="1" th:max="${product.stock}" value="1"
+                               th:disabled="${product.stock == 0}" required/>
+                    </div>
+                    <button class="btn btn-primary btn-full" type="submit"
+                            th:disabled="${product.stock == 0}"
+                            th:text="${product.stock > 0 ? 'Buy Now' : 'Out of Stock'}">Buy Now</button>
+                </form>
+            </div>
+            <div class="card" th:if="${#authorization.expression('!isAuthenticated()')}">
+                <p class="text-secondary text-sm">
+                    <a class="link-primary" th:href="@{/auth/login}">Log in</a> to place an order.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <hr class="divider"/>
+
+    <!-- Reviews section -->
+    <div class="reviews-section">
+        <h3 class="section-title">
+            Reviews
+            <span class="review-count"
+                  th:text="'(' + ${reviews.size()} + ')'"></span>
+        </h3>
+
+        <div th:if="${reviews == null or #lists.isEmpty(reviews)}" class="empty-state">
+            <div class="empty-icon">💬</div>
+            <p class="text-muted">No reviews yet. Be the first!</p>
+        </div>
+
+        <div th:each="review : ${reviews}" class="review-item">
+            <div class="review-header">
+                <div class="review-author">
+                    <div class="review-avatar"
+                         th:text="${#strings.substring(review.buyer.username, 0, 1).toUpperCase()}"></div>
+                    <div class="review-meta">
+                        <strong th:text="${review.buyer.username}"></strong>
+                        <span class="review-date"
+                              th:text="${#temporals.format(review.createdAt, 'dd MMM yyyy')}"></span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="review-stars">
+                        <span th:each="i : ${#numbers.sequence(1,5)}"
+                              th:text="${i <= review.rating ? '★' : '☆'}"
+                              th:classappend="${i <= review.rating ? '' : 'star-empty'}"></span>
+                    </span>
+                    <!-- Delete review — author or ADMIN only -->
+                    <form th:if="${#authorization.expression('hasRole(''ADMIN'')') or (#authorization.expression('isAuthenticated()') and review.buyer.username == #authentication.name)}"
+                          th:action="@{/reviews/{id}/delete(id=${review.id})}" method="post"
+                          onsubmit="return confirm('Delete this review?');">
+                        <input type="hidden" name="productId" th:value="${product.id}"/>
+                        <button class="btn btn-ghost btn-sm" type="submit">✕</button>
+                    </form>
+                </div>
+            </div>
+            <p class="review-comment" th:text="${review.comment}"></p>
+        </div>
+
+        <!-- Leave a Review — BUYER only -->
+        <div th:if="${#authorization.expression('hasRole(''BUYER'')')}" class="mt-4">
+            <div class="card">
+                <h3>Leave a Review</h3>
+                <form th:action="@{/products/{id}/reviews(id=${product.id})}"
+                      th:object="${reviewDTO}" method="post">
+                    <div class="form-group">
+                        <label for="rating">Rating (1–5)</label>
+                        <input class="form-control" type="number" id="rating"
+                               th:field="*{rating}" min="1" max="5" required
+                               style="max-width:120px;"/>
+                        <div class="form-error" th:errors="*{rating}"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="comment">Comment</label>
+                        <textarea class="form-control" id="comment" th:field="*{comment}"
+                                  rows="3" required placeholder="Share your experience..."></textarea>
+                        <div class="form-error" th:errors="*{comment}"></div>
+                    </div>
+                    <button class="btn btn-primary" type="submit">Submit Review</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <a class="back-link" th:href="@{/products}">← Back to Products</a>
+</section>
+</body>
+</html>

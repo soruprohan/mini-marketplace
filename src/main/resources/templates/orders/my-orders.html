@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>My Orders – Mini Marketplace</title>
+</head>
+<body>
+<section>
+    <div class="page-header">
+        <h2>My Orders</h2>
+    </div>
+
+    <div th:if="${#lists.isEmpty(orders)}" class="empty-state">
+        <div class="empty-icon">🛒</div>
+        <p class="text-muted mb-2">You have no orders yet.</p>
+        <a th:href="@{/products}" class="btn btn-primary btn-sm">Browse products →</a>
+    </div>
+
+    <div class="table-wrapper" th:unless="${#lists.isEmpty(orders)}">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Product</th>
+                    <th>Qty</th>
+                    <th>Status</th>
+                    <th>Placed</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="order : ${orders}">
+                    <td class="text-muted text-sm" th:text="${order.id}"></td>
+                    <td>
+                        <a class="link-plain font-medium"
+                           th:href="@{/products/{id}(id=${order.product.id})}"
+                           th:text="${order.product.name}"></a>
+                    </td>
+                    <td th:text="${order.quantity}"></td>
+                    <td>
+                        <span class="badge"
+                              th:classappend="${order.status == 'PENDING' ? 'badge-pending' : (order.status == 'RECEIVED' ? 'badge-confirmed' : 'badge-cancelled')}"
+                              th:text="${order.status}"></span>
+                    </td>
+                    <td class="text-muted text-sm"
+                        th:text="${#temporals.format(order.createdAt, 'dd MMM yyyy HH:mm')}"></td>
+                    <td>
+                        <div class="flex gap-2" th:if="${order.status == 'PENDING'}">
+                            <form th:action="@{/orders/{id}/receive(id=${order.id})}" method="post"
+                                  onsubmit="return confirm('Mark this order as received?');">
+                                <button class="btn btn-sm btn-primary" type="submit">✓ Received</button>
+                            </form>
+                            <form th:action="@{/orders/{id}/cancel(id=${order.id})}" method="post"
+                                  onsubmit="return confirm('Cancel this order?');">
+                                <button class="btn btn-sm btn-danger" type="submit">Cancel</button>
+                            </form>
+                        </div>
+                        <span th:if="${order.status != 'PENDING'}" class="text-muted text-sm">—</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <a class="back-link" th:href="@{/products}">← Back to Products</a>
+</section>
+</body>
+</html>

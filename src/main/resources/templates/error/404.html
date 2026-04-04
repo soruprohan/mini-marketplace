@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>404 Page Not Found – Mini Marketplace</title>
+</head>
+<body>
+<section>
+    <div class="error-page">
+        <div class="error-icon error-icon-404">🔍</div>
+        <h2>404 — Page Not Found</h2>
+        <p th:text="${message} ?: 'The page you are looking for does not exist.'"></p>
+        <a class="btn btn-primary" th:href="@{/products}">Go to Products</a>
+    </div>
+</section>
+</body>
+</html>
