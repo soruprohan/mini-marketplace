@@ -26,6 +26,9 @@ WORKDIR /app
 # Copy only the fat JAR from the builder stage
 COPY --from=builder /app/target/*.jar app.jar
 
+# Render sets PORT dynamically; default to prod profile
+ENV SPRING_PROFILES_ACTIVE=prod
+
 EXPOSE 8080
 
 ENTRYPOINT ["java", "-jar", "app.jar"]

@@ -8,12 +8,9 @@ spring:
       ddl-auto: update
     show-sql: false
     defer-datasource-initialization: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
   sql:
     init:
       mode: always
 
 server:
-  port: 8080
+  port: ${PORT:8080}
