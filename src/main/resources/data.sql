@@ -8,7 +8,7 @@ VALUES ('ROLE_ADMIN'), ('ROLE_SELLER'), ('ROLE_BUYER')
     ON CONFLICT (name) DO NOTHING;
 
 -- Seeds a default admin user (password: password123)
--- BCrypt hash of 'admin1234' — safe to commit, it's just a hash
+-- BCrypt hash of 'password123' — safe to commit, it's just a hash
 INSERT INTO users (username, email, password, enabled)
 VALUES ('admin', 'admin@marketplace.com', '$2a$12$Pxl647zWgCrwA5rw4N9EkerQwZqrSn5NmBb8DxvSyGaticCSFwKG6', true)
     ON CONFLICT (username) DO NOTHING;
